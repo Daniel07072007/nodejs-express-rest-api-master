@@ -2,6 +2,10 @@ import express from "express";
 import fs from "fs";
 import bodyParser from "body-parser";
 import cors from "cors";
+import ngrok from "ngrok";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -34,6 +38,7 @@ app.get("/books", (req, res) => {
   res.json(data.books);
 });
 
+// Obtener los libros 
 app.get("/books/:id", (req, res) => {
   const data = readData();
   const id = parseInt(req.params.id);
@@ -41,6 +46,7 @@ app.get("/books/:id", (req, res) => {
   res.json(book);
 });
 
+// Agrega un libro
 app.post("/books", (req, res) => {
   const data = readData();
   const body = req.body;
@@ -53,6 +59,7 @@ app.post("/books", (req, res) => {
   res.json(newBook);
 });
 
+// Actualizar un libro
 app.put("/books/:id", (req, res) => {
   const data = readData();
   const body = req.body;
@@ -66,6 +73,7 @@ app.put("/books/:id", (req, res) => {
   res.json({ message: "Book updated successfully" });
 });
 
+// Eliminar un libro
 app.delete("/books/:id", (req, res) => {
   const data = readData();
   const id = parseInt(req.params.id);
@@ -75,6 +83,18 @@ app.delete("/books/:id", (req, res) => {
   res.json({ message: "Book deleted successfully" });
 });
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, async () => {
+  console.log(`Server listening on port ${PORT}`);
+
+  try {
+    const url = await ngrok.connect({
+      addr: PORT,
+      authtoken: process.env.NGROK_AUTHTOKEN,
+
+    });
+    console.log(`> ngrok tunnel opened at ${url}`);
+  } catch (err) {
+    console.error("Error starting ngrok", err);
+  }
 });

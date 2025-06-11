@@ -20,6 +20,3 @@ Content-Type: application/json
 {
   "year": 1989
 }
-
-###
-DELETE http://localhost:3000/books/3 HTTP/1.1
